@@ -1,0 +1,202 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+using System.Security.Cryptography;
+
+namespace EncryptionManager
+{
+	public class EncryptionMethods
+	{
+		/// <summary>
+		/// Encrypts the un-cyphered key as an array of bytes
+		/// </summary>
+		/// <param name="plainText">The un-ciphered string to be encrypted</param>
+		/// <param name="key">the key as an array of bytes</param>
+		/// <param name="iv">the salt as an array of bytes</param>
+		/// <param name="keySize">the encryption strength - haven't seen this make a difference yet.</param>
+		/// <returns>An array of bytes</returns>
+		public static byte[] EncryptStringToBytes_AES(string plainText, byte[] key, byte[] iv
+			, int keySize)
+		{
+			// Check arguments. 
+			if (plainText == null || plainText.Length <= 0)
+			{
+				throw new ArgumentNullException("plainText");
+			}
+			if (key == null || key.Length <= 0)
+			{
+				throw new ArgumentNullException("Key");
+			}
+			if (iv == null || iv.Length <= 0)
+			{
+				throw new ArgumentNullException("Key");
+			}
+
+            byte[] b2 = System.Text.Encoding.ASCII.GetBytes(plainText);
+
+			byte[] encrypted;
+			// Create an Aes object 
+			// with the specified key and IV. 
+			using (Aes aesAlg = Aes.Create())
+			{
+				aesAlg.Key = key;
+				aesAlg.IV = iv;
+				aesAlg.Mode = CipherMode.CBC;
+                aesAlg.Padding = PaddingMode.PKCS7;
+                
+				// Create a decrytor to perform the stream transform.
+				ICryptoTransform encryptor = aesAlg.CreateEncryptor(key, aesAlg.IV);					
+
+				// Create the streams used for encryption. 
+
+				using (MemoryStream msEncrypt = new MemoryStream())
+				{
+					using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+					{
+
+                        csEncrypt.Write(b2, 0, b2.Length);
+                        csEncrypt.FlushFinalBlock();
+                        encrypted = msEncrypt.ToArray();
+					}       
+                    msEncrypt.Close();
+				}
+			}
+			// Return the encrypted bytes from the memory stream. 
+			return encrypted;
+		}
+
+		/// <summary>
+		/// Decrypts a cyphered key and returns it as clear text
+		/// </summary>
+		/// <param name="plainText">The ciphered string values in the form of a byte array</param>
+		/// <param name="key">the key as an array of bytes</param>
+		/// <param name="iv">the salt as an array of bytes</param>
+		/// <param name="keySize">the encryption strength - haven't seen this make a difference yet.</param>
+		/// <returns>Clear text as a string</returns>
+		public static string DecryptStringFromBytes_AES(byte[] cipherText, byte[] key, byte[] iv
+			, int keySize)
+		{
+            // Check arguments. 
+			if (cipherText == null || cipherText.Length <= 0)
+			{
+				throw new ArgumentNullException("cipherText");
+			}
+			if (key == null || key.Length <= 0)
+			{
+				throw new ArgumentNullException("Key");
+			}
+			if (iv == null || iv.Length <= 0)
+			{
+				throw new ArgumentNullException("Key");
+			}
+
+            // Declare the string used to hold 
+            // the decrypted text. 
+            string plaintext = null;
+
+            // Create an Aes object 
+            // with the specified key and IV. 
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = key;
+                aesAlg.IV = iv;
+				aesAlg.Mode = CipherMode.CBC;
+				aesAlg.Padding = PaddingMode.PKCS7;
+
+                // Create a decrytor to perform the stream transform.
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(key, aesAlg.IV);
+
+                // Create the streams used for decryption. 
+                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+                            // Read the decrypted bytes from the decrypting stream
+                            // and place them in a string.
+                            plaintext = srDecrypt.ReadToEnd();
+                        }
+                    }
+                }
+
+            }
+
+            return plaintext;
+
+        }
+
+		/// <summary>
+		/// Alternate means of encryption permitting a choice from a variety of encryption methods.
+		/// Uses the Rfc2898DeriveBytes crypto method which permits dynamic key generation
+		/// 
+		/// </summary>
+		/// <typeparam name="T">The encryption type to be applied</typeparam>
+		/// <param name="value">The clear text to be encrypted</param>
+		/// <param name="key">The key cast as byte[]</param>
+		/// <param name="salt">The salt value as byte[]</param>
+		/// <returns>The cyphered value as a string</returns>
+		public static string GenericEncrypt<T>(string value, byte[] key, byte[] salt)
+	   where T : SymmetricAlgorithm, new()
+		{
+			DeriveBytes rgb = new Rfc2898DeriveBytes(key, salt, 5);
+
+			SymmetricAlgorithm algorithm = new T();
+			algorithm.Mode = CipherMode.CBC;
+
+			byte[] rgbKey = rgb.GetBytes(algorithm.KeySize >> 3);
+			byte[] rgbIV = rgb.GetBytes(algorithm.BlockSize >> 3);
+
+			ICryptoTransform transform = algorithm.CreateEncryptor(rgbKey, rgbIV);
+
+			using (MemoryStream buffer = new MemoryStream())
+			{
+				using (CryptoStream stream = new CryptoStream(buffer, transform, CryptoStreamMode.Write))
+				{
+					using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
+					{
+						writer.Write(value);
+					}
+				}
+
+				return Convert.ToBase64String(buffer.ToArray());
+			}
+		}
+
+		/// <summary>
+		/// Alternate means of decryption permitting a choice from a variety of decryption methods
+		/// </summary>
+		/// <typeparam name="T">The decryption type to be applied</typeparam>
+		/// <param name="value">The ciphered text to be decrypted</param>
+		/// <param name="key">The key cast as byte[]</param>
+		/// <param name="salt">The salt value as byte[]</param>
+		/// <returns>The decrypted clear text as a string</returns>
+		public static string GenericDecrypt<T>(string text, byte[] key, byte[] salt)
+		   where T : SymmetricAlgorithm, new()
+		{
+			DeriveBytes rgb = new Rfc2898DeriveBytes(key, salt, 1000);
+
+			SymmetricAlgorithm algorithm = new T();
+			algorithm.Mode = CipherMode.CBC;
+			algorithm.Padding = PaddingMode.None;
+
+			byte[] rgbKey = rgb.GetBytes(algorithm.KeySize >> 3);
+			byte[] rgbIV = rgb.GetBytes(algorithm.BlockSize >> 3);
+
+			ICryptoTransform transform = algorithm.CreateDecryptor(rgbKey, rgbIV);
+
+			using (MemoryStream buffer = new MemoryStream(Convert.FromBase64String(text)))
+			{
+				using (CryptoStream stream = new CryptoStream(buffer, transform, CryptoStreamMode.Read))
+				{
+					using (StreamReader reader = new StreamReader(stream, Encoding.ASCII))
+					{
+						return reader.ReadToEnd();
+					}
+				}
+			}
+		}
+	}
+}

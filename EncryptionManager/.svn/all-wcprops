@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/mdsa_app/!svn/ver/624/ALERiTyServer/branches/EncryptionManager/EncryptionManager
+END
+OpenSslCompatDeriveBytes.cs
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/mdsa_app/!svn/ver/640/ALERiTyServer/branches/EncryptionManager/EncryptionManager/OpenSslCompatDeriveBytes.cs
+END
+Crypto.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/mdsa_app/!svn/ver/645/ALERiTyServer/branches/EncryptionManager/EncryptionManager/Crypto.cs
+END
+Form1.resx
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/mdsa_app/!svn/ver/640/ALERiTyServer/branches/EncryptionManager/EncryptionManager/Form1.resx
+END
+app.config
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/mdsa_app/!svn/ver/641/ALERiTyServer/branches/EncryptionManager/EncryptionManager/app.config
+END
+Form1.Designer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/mdsa_app/!svn/ver/641/ALERiTyServer/branches/EncryptionManager/EncryptionManager/Form1.Designer.cs
+END
+Form1.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/mdsa_app/!svn/ver/642/ALERiTyServer/branches/EncryptionManager/EncryptionManager/Form1.cs
+END
+CryptoManager.csproj
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/mdsa_app/!svn/ver/641/ALERiTyServer/branches/EncryptionManager/EncryptionManager/CryptoManager.csproj
+END
+Program.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/mdsa_app/!svn/ver/641/ALERiTyServer/branches/EncryptionManager/EncryptionManager/Program.cs
+END
+CryptoConfiguration.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/mdsa_app/!svn/ver/643/ALERiTyServer/branches/EncryptionManager/EncryptionManager/CryptoConfiguration.cs
+END
