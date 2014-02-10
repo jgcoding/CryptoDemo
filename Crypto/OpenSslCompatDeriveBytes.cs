@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -69,7 +69,7 @@ namespace Crypto
                 _hashListReadIndex = 0;
 
                 int preHashLength = _data.Length + ((_salt != null) ? _salt.Length : 0);
-                
+
                 var preHash = new byte[preHashLength];
 
                 Buffer.BlockCopy(_data, 0, preHash, 0, _data.Length);

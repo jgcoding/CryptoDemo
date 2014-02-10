@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CryptoManager")]
+[assembly: AssemblyTitle("Crypto")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Cooper Notification")]
-[assembly: AssemblyProduct("OpenSSL")]
-[assembly: AssemblyCopyright("Copyright © Cooper Notification 2013")]
+[assembly: AssemblyCompany("PricewaterhouseCoopers LLP")]
+[assembly: AssemblyProduct("Crypto")]
+[assembly: AssemblyCopyright("Copyright © PricewaterhouseCoopers LLP 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("205c7296-d08f-4f06-b32c-346970f3a2cf")]
+[assembly: Guid("1a20cd26-79a4-439c-8eb0-6e8bfd09002e")]
 
 // Version information for an assembly consists of the following four values:
 //
