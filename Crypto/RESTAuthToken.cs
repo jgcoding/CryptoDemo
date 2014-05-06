@@ -26,7 +26,7 @@ namespace Crypto
                 var json = JObject.Parse(bson);
 
                 // extract the AES encryption strength
-                var keysize = (CryptoLevel)Enum.Parse(typeof(CryptoLevel), json.SelectToken("AesStrength").ToString());
+                var keysize = (CryptoLevel)Enum.Parse(typeof(CryptoLevel), json.SelectToken("aesStrength").ToString());
 
                 // extract the hashing mechanism
                 var hash = json.SelectToken("hash").ToString();
@@ -47,16 +47,16 @@ namespace Crypto
                 var m_cipherString = json.SelectToken("cipher").ToString();
 
                 // extract the REST transaction id
-                RESTTransactionId = Guid.Parse(json.SelectToken("TokenId").ToString());
+                RESTTransactionId = Guid.Parse(json.SelectToken("_id").ToString());
 
                 //extract the token's expiration
-                RESTExpiration = DateTime.Parse(json.SelectToken("TokenExpiration").ToString());
+                RESTExpiration = DateTime.Parse(json.SelectToken("expiration").ToString());
 
                 // initialize a crypto configuration for this particular cipher:
-                CryptoManager.InitializeEncryption(keysize, hash, iterations, nonceLength, salt, nonce);
+                CryptoManager.Crypto.InitializeEncryption(keysize, hash, iterations, nonceLength, salt, nonce);
 
                 // decrypt the message (returned as a byte array)
-                byte[] response = CryptoManager.DecryptAES(Convert.FromBase64String(m_cipherString), keysize);
+                byte[] response = CryptoManager.Crypto.DecryptAES(Convert.FromBase64String(m_cipherString), keysize);
 
                 // translate the byte array response into readable text:
                 var m_cleartext = Encoding.ASCII.GetString(response);

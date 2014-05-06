@@ -10,6 +10,7 @@ using Crypto;
 using System.Security.Cryptography;
 using System.Collections;
 using Newtonsoft.Json.Linq;
+using CodeRight.Crypto;
 
 namespace CryptoTest
 {
@@ -25,8 +26,6 @@ namespace CryptoTest
 
         byte[] io = new byte[4] { 0, 0, 0, 2 };
 
-        
-
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
             // refresh the encryption strength (this doesn't seem to make any difference in the cipher)
@@ -34,12 +33,12 @@ namespace CryptoTest
 
             // Encrypt the string to an array of bytes.
             byte[] clearPayload = Encoding.ASCII.GetBytes(txtClearText.Text);
-            CryptoManager.ToJson = Convert.ToBase64String(CryptoManager.EncryptAES(clearPayload, m_keySize));
-            txtClearText.Text = CryptoManager.ToJson;
-            txtCryptoAESSalt.Text = CryptoManager.CryptoSalt;
-            txtNonceValue.Text = Encoding.ASCII.GetString(CryptoManager.Nonce);
+            CryptoManager.Crypto.ToJson = Convert.ToBase64String(CryptoManager.Crypto.EncryptAES(clearPayload, m_keySize));
+            txtClearText.Text = CryptoManager.Crypto.ToJson;
+            txtCryptoAESSalt.Text = CryptoManager.Crypto.CryptoSalt;
+            txtNonceValue.Text = Encoding.ASCII.GetString(CryptoManager.Crypto.Nonce);
 
-            var bson = Encoding.ASCII.GetBytes(CryptoManager.ToJson);
+            var bson = Encoding.ASCII.GetBytes(CryptoManager.Crypto.ToJson);
             txtEncryptedText.Text = Convert.ToBase64String(bson);
             var json = Encoding.ASCII.GetString(Convert.FromBase64String(txtEncryptedText.Text));
 
@@ -84,7 +83,7 @@ namespace CryptoTest
                     m_keySize = CryptoLevel.AES256;
                     break;
             }
-            CryptoManager.InitializeEncryption(aesize: (CryptoLevel)cboStrength.SelectedIndex, hash: cboCryptoHash.Text);
+            CryptoManager.Crypto.InitializeEncryption(aesize: (CryptoLevel)cboStrength.SelectedIndex, hash: cboCryptoHash.Text);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -94,10 +93,10 @@ namespace CryptoTest
 
             txtClearText.Text = "psmoak001";
             //byte[] nonce = new byte[] { 1, 2, 3, 4, 5, 5, 4, 3 };
-            byte[] nonce = CryptoManager.GenerateNonce(8);
-            String nonceString = Convert.ToBase64String(nonce);
+            byte[] nonce = CryptoManager.Crypto.GenerateNonce(8);
+            String nonceString = Encoding.ASCII.GetString(nonce);
 
-            var hashid = cboCryptoHash.FindString(CryptoManager.CryptoHash);
+            var hashid = cboCryptoHash.FindString(CryptoManager.Crypto.CryptoHash);
             cboCryptoHash.SelectedIndex = hashid;
         }
 
@@ -174,7 +173,7 @@ namespace CryptoTest
 
         private void btnNewSalt_Click(object sender, EventArgs e)
         {
-            txtCryptoAESSalt.Text = CryptoManager.CryptoSalt;
+            txtCryptoAESSalt.Text = CryptoManager.Crypto.CryptoSalt;
             //txtCryptoAESSalt.Text = Encoding.ASCII.GetString(CryptoManager.GenerateNonce(32));
             //txtCrypto128Salt.Text = Encoding.ASCII.GetString(CryptoManager.GenerateNonce(16));
         }
@@ -183,7 +182,7 @@ namespace CryptoTest
         {
             if (numNonceLength.Value > 7)
             {
-                txtNonceValue.Text = Encoding.ASCII.GetString(CryptoManager.GenerateNonce((int)numNonceLength.Value));
+                txtNonceValue.Text = Encoding.ASCII.GetString(CryptoManager.Crypto.GenerateNonce((int)numNonceLength.Value));
             }
         }
 	}

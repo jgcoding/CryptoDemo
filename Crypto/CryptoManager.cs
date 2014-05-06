@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Collections;
 using System.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 
 namespace Crypto
 {
@@ -65,7 +66,7 @@ namespace Crypto
         /// <summary>
         /// Gets or sets the encryption level as a CryptoLevel enum
         /// </summary>
-        public static CryptoLevel KeySize
+        public CryptoLevel KeySize
         {
             get
             {
@@ -88,7 +89,7 @@ namespace Crypto
         /// <summary>
         /// Gets the characters from which the nonce value is derived. The value may be privately set.
         /// </summary>
-        public static Char[] ValidNonceChars
+        public Char[] ValidNonceChars
         {
             get
             {
@@ -108,7 +109,7 @@ namespace Crypto
         /// <summary>
         /// Gets the cryptographic hash method. The value may be privately set.
         /// </summary>
-        public static String CryptoHash
+        public String CryptoHash
         {
             get
             {
@@ -128,7 +129,7 @@ namespace Crypto
         /// <summary>
         /// Gets the number of iterations employed in the encryption and decryption process. The value may be privately set.
         /// </summary>
-        public static Int16 CryptoIterations
+        public Int16 CryptoIterations
         {
             get
             {
@@ -148,7 +149,7 @@ namespace Crypto
         /// <summary>
         /// Gets the length of the nonce string to be generated. The value may be privately set.
         /// </summary>
-        public static Int16 NonceLength
+        public Int16 NonceLength
         {
             get
             {
@@ -169,7 +170,7 @@ namespace Crypto
         /// <summary>
         /// Gets the Nonce value in bytes. This value is calculated when the nonce length is privately set.
         /// </summary>
-        public static byte[] Nonce
+        public byte[] Nonce
         {
             get
             {
@@ -184,11 +185,21 @@ namespace Crypto
                 m_nonce = value;
             }
         }
+        /// <summary>
+        /// Returns the ASCII Encoded string of the nonce bytes
+        /// </summary>
+        public String NonceToString
+        {
+            get
+            {
+                return Encoding.ASCII.GetString(Nonce);
+            }
+        }
 
         /// <summary>
         /// Gets the cryptographic salt string utilized in the encryption/decryption. This value is set when the AES key strength is set.
         /// </summary>
-        public static String CryptoSalt
+        public String CryptoSalt
         {
             get
             {
@@ -205,7 +216,7 @@ namespace Crypto
         }
 
         static String m_json;
-        public static String ToJson
+        public String ToJson
         {
             get
             {
@@ -214,16 +225,35 @@ namespace Crypto
             set
             {
                 m_json = JsonConvert.SerializeObject(
-                    new { 
-                        TokenId = Guid.NewGuid(),
-                        TokenExpiration = DateTime.UtcNow.AddMinutes(60),
-                        AesStrength = KeySize.ToString(), 
+                    new {
+                        _id = Guid.NewGuid(),
+                        expiration = DateTime.UtcNow.AddMinutes(60),
+                        aesStrength = KeySize.ToString(), 
                         hash = CryptoHash, 
                         iterations = CryptoIterations, 
                         salt = CryptoSalt, 
                         nonceLength = NonceLength,
-                        nonce = Encoding.ASCII.GetString(Nonce), 
+                        nonce = NonceToString, 
                         cipher = value
+                    });
+            }
+        }
+
+        public String AuthToken
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(
+                    new
+                    {
+                        _id = Guid.NewGuid(),
+                        expiration = DateTime.UtcNow.AddMinutes(60),
+                        aesStrength = KeySize.ToString(),
+                        hash = CryptoHash,
+                        iterations = CryptoIterations,
+                        salt = CryptoSalt,
+                        nonceLength = NonceLength,
+                        nonce = NonceToString
                     });
             }
         }
@@ -235,7 +265,7 @@ namespace Crypto
         /// <summary>
         /// Loads the crypto properties for test purposes.
         /// </summary>
-        static void ConfigureCryptoTest()
+        void ConfigureCryptoTest()
         {
             m_cryptoSalt = KeySize == CryptoLevel.AES256 ? "deadbeefdeadbeefdeadbeefdeadbeef" : KeySize == CryptoLevel.AES128 ? "deadbeefdeadbeef" : String.Empty;
             m_cryptoHash = "SHA1";
@@ -249,7 +279,7 @@ namespace Crypto
         /// Sets or resets the encryption level for the encryption instance
         /// </summary>
         /// <param name="keysize">The encryption level as an CryptoLevel enum</param>
-        public static void InitializeEncryption(CryptoLevel aesize = CryptoLevel.AES256, String hash = "SHA1", Int16 iterations = 5, Int16 nonceLength = 8, String salt = "", String nonce = "")
+        public void InitializeEncryption(CryptoLevel aesize = CryptoLevel.AES256, String hash = "SHA1", Int16 iterations = 5, Int16 nonceLength = 8, String salt = "", String nonce = "")
         {
             KeySize = aesize;
             m_cryptoHash = hash;
@@ -279,12 +309,27 @@ namespace Crypto
             Buffer.BlockCopy(stuff_array, m_encryptionBits / 8, iv_array, 0, 16);
         }
 
+        public void InitializeEncryption(String @token)
+        {
+            var def = new {
+                AesStrength = (CryptoLevel)Enum.Parse(typeof(CryptoLevel),"None"),
+                hash = "SHA1",
+                iterations = 5,
+                nonceLength = 8,                
+                salt = "",
+                nonce = ""
+            };
+
+            var crypto = JsonConvert.DeserializeAnonymousType(@token, def);
+            InitializeEncryption(crypto.AesStrength, crypto.hash, (Int16)crypto.iterations, (Int16)crypto.nonceLength, crypto.salt, crypto.nonce);
+        }
+
         /// <summary>
         /// Generates a random value derived from a set of pre-defined alphanumeric characters.
         /// </summary>
         /// <param name="length">The length of the random value string</param>
         /// <returns>Returns a random value derived from a set of pre-defined alphanumeric characters</returns>
-        public static byte[] GenerateNonce(Int32 length = 8)
+        public byte[] GenerateNonce(Int32 length = 8)
         {
             // set the random seed
             var seed = ValidNonceChars.Count();
@@ -307,7 +352,7 @@ namespace Crypto
         /// <param name="clearPayload">The un-ciphered data to be encrypted</param>
         /// <param name="keySize">The encryption level to be used to construct the encryption hash.</param>
         /// <returns>An ciphered array of bytes</returns>
-        public static byte[] EncryptAES(byte[] clearPayload, CryptoLevel keysize = CryptoLevel.AES256)
+        public byte[] EncryptAES(byte[] clearPayload, CryptoLevel keysize = CryptoLevel.AES256)
         {
             // if the key strength requested is different from the instance
             if (KeySize != KeySize)
@@ -365,7 +410,7 @@ namespace Crypto
         /// <param name="plainText">The ciphered string values in the form of a byte array</param>
         /// <param name="keySize">the encryption strength - haven't seen this make a difference yet.</param>
         /// <returns>Clear text as a string</returns>
-        public static byte[] DecryptAES(byte[] cipheredPayload, CryptoLevel keysize = CryptoLevel.AES256)
+        public byte[] DecryptAES(byte[] cipheredPayload, CryptoLevel keysize = CryptoLevel.AES256)
         {
             // if the key strenght requested is different from the instance
             if (KeySize != KeySize)
@@ -421,9 +466,9 @@ namespace Crypto
         }
 
         /// <summary>
-        /// Un-documented: Retrieves crypto properties from an encrypted app.config. This isn't in the specifications at this time.
+        /// Retrieves crypto properties from an encrypted app.config. 
         /// </summary>
-        static void ConfigureCryptoFromAppConfig()
+        void ConfigureCryptoFromAppConfig()
         {
             m_cryptoSalt = KeySize == CryptoLevel.AES256 ? ConfigurationManager.AppSettings["Crypto256Salt"] : KeySize == CryptoLevel.AES128 ? ConfigurationManager.AppSettings["Crypto128Salt"] : String.Empty;
             m_cryptoHash = ConfigurationManager.AppSettings["CryptoHash"];

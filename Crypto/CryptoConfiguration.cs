@@ -5,7 +5,7 @@ using System.Text;
 using System.Configuration;
 using System.IO;
 
-namespace Crypto
+namespace CodeRight.Crypto
 {
     /// <summary>
     /// Overlay utility class for working with encrytped app.config settings
@@ -78,7 +78,7 @@ namespace Crypto
             {
                 if (m_config == null)
                 {
-                    m_config = ConfigurationManager.OpenExeConfiguration("CryptoManager.exe");
+                    m_config = ConfigurationManager.OpenExeConfiguration(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
                     m_lastModified = File.GetLastWriteTimeUtc(m_config.FilePath);
                 }
                 return m_config;
