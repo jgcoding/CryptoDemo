@@ -91,7 +91,7 @@ namespace CryptoTest
             elevel = BitConverter.GetBytes(0);
             BitArray bits = new BitArray(elevel);
 
-            txtClearText.Text = "psmoak001";
+            txtClearText.Text = "Phaeglanssian";
             //byte[] nonce = new byte[] { 1, 2, 3, 4, 5, 5, 4, 3 };
             byte[] nonce = CryptoManager.Crypto.GenerateNonce(8);
             String nonceString = Encoding.ASCII.GetString(nonce);

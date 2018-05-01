@@ -1,0 +1,40 @@
+﻿<Properties StartupConfiguration="{DA94BAFF-2959-4CDC-B21E-405CC726DFA6}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../Crypto/CryptoConfiguration.cs">
+    <Files>
+      <File FileName="App.config" Line="1" Column="1" />
+      <File FileName="Form1.cs" Line="37" Column="50" />
+      <File FileName="../Crypto/CryptoManager.cs" Line="270" Column="93" />
+      <File FileName="../Crypto/RESTAuthToken.cs" Line="1" Column="1" />
+      <File FileName="../Crypto/CryptoConfiguration.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="CryptoTest" expanded="True">
+            <Node name="Crypto" expanded="True">
+              <Node name="References" expanded="True">
+                <Node name="From Packages" expanded="True" />
+              </Node>
+              <Node name="CryptoConfiguration.cs" selected="True" />
+            </Node>
+            <Node name="CryptoTest" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/Mac/Documents/Development/CryptoDemo/CryptoTest/Form1.cs" relfile="Form1.cs" line="109" column="1" />
+      <Breakpoint file="/Users/Mac/Documents/Development/CryptoDemo/CryptoTest/Form1.cs" relfile="Form1.cs" line="113" column="1" />
+      <Breakpoint file="/Users/Mac/Documents/Development/CryptoDemo/CryptoTest/Form1.cs" relfile="Form1.cs" line="118" column="1" />
+      <Breakpoint file="/Users/Mac/Documents/Development/CryptoDemo/CryptoTest/Form1.cs" relfile="Form1.cs" line="122" column="1" />
+      <Breakpoint file="/Users/Mac/Documents/Development/CryptoDemo/CryptoTest/Form1.cs" relfile="Form1.cs" line="127" column="1" />
+      <Breakpoint file="/Users/Mac/Documents/Development/CryptoDemo/CryptoTest/Form1.cs" relfile="Form1.cs" line="131" column="1" />
+      <Breakpoint file="/Users/Mac/Documents/Development/CryptoDemo/CryptoTest/Form1.cs" relfile="Form1.cs" line="136" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
